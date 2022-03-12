@@ -24,7 +24,7 @@ from .route import Route
 if TYPE_CHECKING:
     from ._enums import ParticleType
 
-__all__ = ('NeitizClient')
+__all__ = ('NeitizClient',)
 
 
 class NeitizClient:
