@@ -69,7 +69,7 @@ class NeitizClient:
         if self._owned_session and self.session:
             await self.session.close()
 
-    async def request(self, route: Route) -> aiohttp.ClientResponse:
+    def request(self, route: Route) -> aiohttp.ClientResponse:
         if not self.session:
             raise ValueError('session is not valid')
 
@@ -147,7 +147,8 @@ class NeitizClient:
         }
 
         route = Route('particles', headers=self.headers, json=json)
-        return route if raw or not self.session else self._request(route)
+        return self._make_request(route, raw)
+
 
     def explode(
         self,
@@ -165,7 +166,8 @@ class NeitizClient:
         }
 
         route = Route('explode', headers=self.headers, json=json)
-        return route if raw or not self.session else self._request(route)
+        return self._make_request(route, raw)
+
 
     def dust(
         self,
@@ -179,7 +181,8 @@ class NeitizClient:
         }
 
         route = Route('dust', headers=self.headers, json=json)
-        return route if raw or not self.session else self._request(route)
+        return self._make_request(route, raw)
+
 
     def sand(
         self,
@@ -193,7 +196,8 @@ class NeitizClient:
         }
 
         route = Route('sand', headers=self.headers, json=json)
-        return route if raw or not self.session else self._request(route)
+        return self._make_request(route, raw)
+
 
     def runescape(
         self,
@@ -207,7 +211,8 @@ class NeitizClient:
         }
 
         route = Route('runescape', headers=self.headers, json=json)
-        return route if raw or not self.session else self._request(route)
+        return self._make_request(route, raw)
+
 
     def replace_colors(
         self,
@@ -229,7 +234,7 @@ class NeitizClient:
         }
 
         route = Route('replace_colors', headers=self.headers, json=json)
-        return route if raw or not self.session else self._request(route)
+        return self._make_request(route, raw)
 
     def merge_colors(
         self,
@@ -253,4 +258,10 @@ class NeitizClient:
         }
 
         route = Route('merge_colors', headers=self.headers, json=json)
-        return route if raw or not self.session else self._request(route)
+        return self._make_request(route, raw)
+
+    def _make_request(self, route: Route, raw: bool) -> Union[Route, Coroutine[Any, Any, tuple[io.BytesIO, str]]]:
+        if raw or not self.session:
+            return route
+        else:
+            return self._request(route)
