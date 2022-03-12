@@ -110,7 +110,7 @@ class NeitizClient:
             'amount': amount,
         }
 
-        route = Route('paritcles', headers=self.headers, json=json)
+        route = Route('particles', headers=self.headers, json=json)
         return route if raw or not self.session else self.request(route)
 
     def explode(
