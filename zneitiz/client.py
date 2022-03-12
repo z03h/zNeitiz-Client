@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import io
 import math
+import time
 from typing import (
     TYPE_CHECKING,
     Optional,
@@ -17,7 +18,12 @@ except ModuleNotFoundError:
 
 import aiohttp
 
-from ._exceptions import NeitizHTTPException, NeitizServerException
+from ._exceptions import (
+    NeitizException,
+    NeitizHTTPException,
+    NeitizServerException,
+    NeitizRatelimitException,
+)
 
 from .route import Route
 
@@ -37,6 +43,7 @@ class NeitizClient:
         *,
         session: Optional[aiohttp.ClientSession] = ...,
     ):
+        self._ratelimited_until: float = 0.0
         self._token: str = token
         self.headers: dict[str, str] = {
             'Authorization': f'Bearer {token}',
@@ -66,6 +73,10 @@ class NeitizClient:
         if not self.session:
             raise ValueError('session is not valid')
 
+        duration = self.is_ratelimited()
+        if duration > 0:
+            raise NeitizException(f'Ratelimited for another {duration:.2f} seconds')
+
         url = route.url
         headers = route.headers
         body = route.json
@@ -80,14 +91,22 @@ class NeitizClient:
                 return file, image_format
             elif 500 <= status < 600:
                 # server error
-                raise NeitizServerException(status, r.reason)
+                err = NeitizServerException(status, r.reason)
+                self._ratelimited_until = time.time() + err.ratelimit_reset
+                raise err
             elif status == 404:
-                message = json.loads(data.decode('utf-8'))['detail']
-                raise NeitizHTTPException(status, message)
+                # not found
+                raise NeitizHTTPException(status, r.reason)
+            elif status == 429:
+                raise NeitizRatelimitException(status, r.reason, r.headers)
             else:
                 # handle http error
                 message = json.loads(data.decode('utf-8'))['message']
                 raise NeitizHTTPException(status, message)
+
+    def is_ratelimited(self):
+        duration = self._ratelimited_until - time.time()
+        return 0 if duration <= 0 else duration
 
     def particles(
         self,
