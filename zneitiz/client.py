@@ -80,8 +80,7 @@ class NeitizClient:
                 return file, image_format
             elif 500 <= status < 600:
                 # server error
-                message = json.loads(data.decode('utf-8'))['message']
-                raise NeitizServerException(status, message)
+                raise NeitizServerException(status, r.reason)
             elif status == 404:
                 message = json.loads(data.decode('utf-8'))['detail']
                 raise NeitizHTTPException(status, message)
