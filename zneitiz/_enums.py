@@ -5,8 +5,8 @@ all = ('ParticleType',)
 
 
 class ParticleType(IntEnum):
-    salt: 1
-    pepper: 2
-    water: 3
-    piss: 4
-    pee: 4
+    salt: 0
+    pepper: 1
+    water: 2
+    piss: 3
+    pee: 3

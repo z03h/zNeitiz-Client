@@ -149,7 +149,6 @@ class NeitizClient:
         route = Route('particles', headers=self.headers, json=json)
         return self._make_request(route, raw)
 
-
     def explode(
         self,
         image_url: str,
@@ -168,7 +167,6 @@ class NeitizClient:
         route = Route('explode', headers=self.headers, json=json)
         return self._make_request(route, raw)
 
-
     def dust(
         self,
         image_url: str,
@@ -182,7 +180,6 @@ class NeitizClient:
 
         route = Route('dust', headers=self.headers, json=json)
         return self._make_request(route, raw)
-
 
     def sand(
         self,
@@ -198,7 +195,6 @@ class NeitizClient:
         route = Route('sand', headers=self.headers, json=json)
         return self._make_request(route, raw)
 
-
     def runescape(
         self,
         text: str,
@@ -212,7 +208,6 @@ class NeitizClient:
 
         route = Route('runescape', headers=self.headers, json=json)
         return self._make_request(route, raw)
-
 
     def replace_colors(
         self,
