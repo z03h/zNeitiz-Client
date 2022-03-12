@@ -1,6 +1,5 @@
 
 from __future__ import annotations
-from email.mime import image
 
 import io
 import math
@@ -63,21 +62,21 @@ class NeitizClient:
         if self._owned_session and self.session:
             await self.session.close()
 
-    async def request(self, route: Route) -> tuple[io.IOBase, str]:
+    async def request(self, route: Route) -> tuple[io.BytesIO, str]:
         if not self.session:
             raise ValueError('session is not valid')
 
         url = route.url
         headers = route.headers
-        json = route.json
+        body = route.json
 
-        async with self.session.get(url, headers=headers, json=json) as r:
+        async with self.session.get(url, headers=headers, json=body) as r:
             data: bytes = await r.read()
             status = int(r.status)
             if 200 <= status < 300:
                 # OK
                 image_format: str = r.content_type.partition('/')[-1]
-                file: io.IOBase = io.BytesIO(data)
+                file: io.BytesIO = io.BytesIO(data)
                 return file, image_format
             elif 500 <= status < 600:
                 # server error
@@ -99,7 +98,7 @@ class NeitizClient:
         speed: int = 2,
         amount: int = 8,
         raw: bool = False,
-    ) -> Union[Route, Coroutine[Any, Any, tuple[io.IOBase, str]]]:
+    ) -> Union[Route, Coroutine[Any, Any, tuple[io.BytesIO, str]]]:
         if speed <= 0:
             raise ValueError('speed cannot be <= 0')
         if amount <= 0:
@@ -121,7 +120,7 @@ class NeitizClient:
         *,
         percent: int = 80,
         raw: bool = False,
-    ) -> Union[Route, Coroutine[Any, Any, tuple[io.IOBase, str]]]:
+    ) -> Union[Route, Coroutine[Any, Any, tuple[io.BytesIO, str]]]:
         if 0 >= percent > 100:
             raise ValueError('percentage cannot be <= 0 or > 100')
 
@@ -138,7 +137,7 @@ class NeitizClient:
         image_url: str,
         *,
         raw: bool = False,
-    ) -> Union[Route, Coroutine[Any, Any, tuple[io.IOBase, str]]]:
+    ) -> Union[Route, Coroutine[Any, Any, tuple[io.BytesIO, str]]]:
 
         json = {
             'image_url': image_url,
@@ -152,7 +151,7 @@ class NeitizClient:
         image_url: str,
         *,
         raw: bool = False,
-    ) -> Union[Route, Coroutine[Any, Any, tuple[io.IOBase, str]]]:
+    ) -> Union[Route, Coroutine[Any, Any, tuple[io.BytesIO, str]]]:
 
         json = {
             'image_url': image_url,
@@ -166,7 +165,7 @@ class NeitizClient:
         text: str,
         *,
         raw: bool = False,
-    ) -> Union[Route, Coroutine[Any, Any, tuple[io.IOBase, str]]]:
+    ) -> Union[Route, Coroutine[Any, Any, tuple[io.BytesIO, str]]]:
 
         json = {
             'text': text,
