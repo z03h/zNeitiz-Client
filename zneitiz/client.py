@@ -69,7 +69,17 @@ class NeitizClient:
         if self._owned_session and self.session:
             await self.session.close()
 
-    async def request(self, route: Route) -> tuple[io.BytesIO, str]:
+    async def request(self, route: Route) -> aiohttp.ClientResponse:
+        if not self.session:
+            raise ValueError('session is not valid')
+
+        url = route.url
+        headers = route.headers
+        body = route.json
+
+        return self.session.get(url, headers=headers, json=body)
+
+    async def _request(self, route: Route) -> tuple[io.BytesIO, str]:
         if not self.session:
             raise ValueError('session is not valid')
 
@@ -83,6 +93,13 @@ class NeitizClient:
 
         async with self.session.get(url, headers=headers, json=body) as r:
             data: bytes = await r.read()
+
+            # check ratelimit header
+            remaining = int(r.headers.get('X-RateLimit-Remaining'))
+            if remaining <= 0:
+                duration = float(r.headers.get('X-RateLimit-Reset'))
+                self._ratelimited_until = time.time() + duration
+
             status = int(r.status)
             if 200 <= status < 300:
                 # OK
@@ -104,9 +121,9 @@ class NeitizClient:
                 message = json.loads(data.decode('utf-8'))['message']
                 raise NeitizHTTPException(status, message)
 
-    def is_ratelimited(self):
+    def is_ratelimited(self) -> float:
         duration = self._ratelimited_until - time.time()
-        return 0 if duration <= 0 else duration
+        return 0.0 if duration <= 0.000001 else duration
 
     def particles(
         self,
@@ -130,7 +147,7 @@ class NeitizClient:
         }
 
         route = Route('particles', headers=self.headers, json=json)
-        return route if raw or not self.session else self.request(route)
+        return route if raw or not self.session else self._request(route)
 
     def explode(
         self,
@@ -148,7 +165,7 @@ class NeitizClient:
         }
 
         route = Route('explode', headers=self.headers, json=json)
-        return route if raw or not self.session else self.request(route)
+        return route if raw or not self.session else self._request(route)
 
     def dust(
         self,
@@ -162,7 +179,7 @@ class NeitizClient:
         }
 
         route = Route('dust', headers=self.headers, json=json)
-        return route if raw or not self.session else self.request(route)
+        return route if raw or not self.session else self._request(route)
 
     def sand(
         self,
@@ -176,7 +193,7 @@ class NeitizClient:
         }
 
         route = Route('sand', headers=self.headers, json=json)
-        return route if raw or not self.session else self.request(route)
+        return route if raw or not self.session else self._request(route)
 
     def runescape(
         self,
@@ -190,7 +207,7 @@ class NeitizClient:
         }
 
         route = Route('runescape', headers=self.headers, json=json)
-        return route if raw or not self.session else self.request(route)
+        return route if raw or not self.session else self._request(route)
 
     def replace_colors(
         self,
@@ -212,7 +229,7 @@ class NeitizClient:
         }
 
         route = Route('replace_colors', headers=self.headers, json=json)
-        return route if raw or not self.session else self.request(route)
+        return route if raw or not self.session else self._request(route)
 
     def merge_colors(
         self,
@@ -236,4 +253,4 @@ class NeitizClient:
         }
 
         route = Route('merge_colors', headers=self.headers, json=json)
-        return route if raw or not self.session else self.request(route)
+        return route if raw or not self.session else self._request(route)

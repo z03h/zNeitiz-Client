@@ -4,6 +4,7 @@ class NeitizException(Exception):
     def __init__(self, message: str):
         self.message: str = message
 
+
 class NeitizHTTPException(NeitizException):
     def __init__(self, status: int, message: str):
         self.status: int = status
@@ -18,7 +19,7 @@ class NeitizRatelimitException(NeitizHTTPException):
         self.remaining: int = int(headers.get('X-RateLimit-Remaining', -1))
 
 
-class NeitizServerException(NeitizException):
+class NeitizServerException(NeitizHTTPException):
     def __init__(self, status: int, message: str):
         self.status: int = status
         self.message: str = message
