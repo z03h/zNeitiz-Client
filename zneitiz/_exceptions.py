@@ -14,9 +14,9 @@ class NeitizHTTPException(NeitizException):
 class NeitizRatelimitException(NeitizHTTPException):
     def __init__(self, status: int, message: str, *, headers: dict[str, str]):
         super().__init__(status, message)
-        self.ratelimit_reset: float = float(headers.get('X-RateLimit-Reset', -1.0))
-        self.limit: int = int(headers.get('X-RateLimit-Limit', -1))
-        self.remaining: int = int(headers.get('X-RateLimit-Remaining', -1))
+        self.ratelimit_reset: float = float(headers.get('x-ratelimit-resest', -1.0))
+        self.limit: int = int(headers.get('x-ratelimit-limit', -1))
+        self.remaining: int = int(headers.get('x-ratelimit-remaining', -1))
 
 
 class NeitizServerException(NeitizHTTPException):

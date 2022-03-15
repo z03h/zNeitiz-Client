@@ -95,10 +95,10 @@ class NeitizClient:
             data: bytes = await r.read()
 
             # check ratelimit header
-            remaining = int(r.headers.get('X-RateLimit-Remaining'))
+            remaining = int(r.headers.get('x-ratelimit-remaining', 1))
             if remaining <= 0:
-                duration = float(r.headers.get('X-RateLimit-Reset'))
-                self._ratelimited_until = time.time() + duration
+                duration = float(r.headers.get('x-ratelimit-reset', time.time() + 20))
+                self._ratelimited_until = duration
 
             status = int(r.status)
             if 200 <= status < 300:
@@ -109,7 +109,7 @@ class NeitizClient:
             elif 500 <= status < 600:
                 # server error
                 err = NeitizServerException(status, r.reason)
-                self._ratelimited_until = time.time() + err.ratelimit_reset
+                self._ratelimited_until = err.ratelimit_reset
                 raise err
             elif status == 404:
                 # not found
