@@ -5,6 +5,8 @@ Client for [zNeitiz API](https://zneitiz.herokuapp.com/).
 Don't expect great things, pretty quick and dirty.
 The API is also on heroku so don't expect anything there either.
 
+Sample images [here](../../wiki).
+
 ## Examples
 
 ```python
