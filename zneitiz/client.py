@@ -1,7 +1,6 @@
 
 from __future__ import annotations
 
-import io
 import math
 import time
 from typing import (
@@ -18,6 +17,9 @@ except ModuleNotFoundError:
 
 import aiohttp
 
+from .route import Route
+from .image import NeitizImage
+
 from ._exceptions import (
     NeitizException,
     NeitizHTTPException,
@@ -25,7 +27,6 @@ from ._exceptions import (
     NeitizRatelimitException,
 )
 
-from .route import Route
 
 if TYPE_CHECKING:
     from ._enums import ParticleType
@@ -59,6 +60,9 @@ class NeitizClient:
             self.session = aiohttp.ClientSession()
             self._owned_session = True
 
+    def __repr__(self) -> str:
+        return f'<NeitizClient closed={self.session.closed} ratelimited={self.is_ratelimited()}>'
+
     async def __aenter__(self):
         return self
 
@@ -69,7 +73,7 @@ class NeitizClient:
         if self._owned_session and self.session:
             await self.session.close()
 
-    def request(self, route: Route) -> aiohttp.ClientResponse:
+    def request(self, route: Route) -> aiohttp.client._RequestContextManager:
         if not self.session:
             raise ValueError('session is not valid')
 
@@ -79,7 +83,7 @@ class NeitizClient:
 
         return self.session.get(url, headers=headers, json=body)
 
-    async def _request(self, route: Route) -> tuple[io.BytesIO, str]:
+    async def _request(self, route: Route) -> NeitizImage:
         if not self.session:
             raise ValueError('session is not valid')
 
@@ -103,23 +107,19 @@ class NeitizClient:
             status = int(r.status)
             if 200 <= status < 300:
                 # OK
-                image_format: str = r.content_type.partition('/')[-1]
-                file: io.BytesIO = io.BytesIO(data)
-                return file, image_format
+                content_type: str = r.content_type
+                file = NeitizImage(data, content_type=content_type, route=route)
+                return file
             elif 500 <= status < 600:
                 # server error
-                err = NeitizServerException(status, r.reason)
+                raise NeitizServerException(status, r.reason)
+            elif status == 429:
+                # ratelimited
+                err = NeitizRatelimitException(status, r.reason, r.headers)
                 self._ratelimited_until = err.ratelimit_reset
                 raise err
-            elif status == 404:
-                # not found
-                raise NeitizHTTPException(status, r.reason)
-            elif status == 429:
-                raise NeitizRatelimitException(status, r.reason, r.headers)
             else:
-                # handle http error
-                message = json.loads(data.decode('utf-8'))['message']
-                raise NeitizHTTPException(status, message)
+                raise NeitizHTTPException(status, r.reason)
 
     def is_ratelimited(self) -> float:
         duration = self._ratelimited_until - time.time()
@@ -133,20 +133,20 @@ class NeitizClient:
         speed: int = 2,
         amount: int = 8,
         raw: bool = False,
-    ) -> Union[Route, Coroutine[Any, Any, tuple[io.BytesIO, str]]]:
+    ) -> Union[Route, Coroutine[Any, Any, NeitizImage]]:
         if speed <= 0:
             raise ValueError('speed cannot be <= 0')
         if amount <= 0:
             raise ValueError('amount cannot be <= 0')
 
-        json = {
+        data = {
             'image_url': image_url,
             'particle_type': int(particle_type),
             'speed': speed,
             'amount': amount,
         }
 
-        route = Route('particles', headers=self.headers, json=json)
+        route = Route('particles', headers=self.headers, json=data)
         return self._make_request(route, raw)
 
     def explode(
@@ -155,16 +155,16 @@ class NeitizClient:
         *,
         percent: int = 80,
         raw: bool = False,
-    ) -> Union[Route, Coroutine[Any, Any, tuple[io.BytesIO, str]]]:
+    ) -> Union[Route, Coroutine[Any, Any, NeitizImage]]:
         if 0 >= percent > 100:
             raise ValueError('percentage cannot be <= 0 or > 100')
 
-        json = {
+        data = {
             'image_url': image_url,
             'percent': percent,
         }
 
-        route = Route('explode', headers=self.headers, json=json)
+        route = Route('explode', headers=self.headers, json=data)
         return self._make_request(route, raw)
 
     def dust(
@@ -172,13 +172,13 @@ class NeitizClient:
         image_url: str,
         *,
         raw: bool = False,
-    ) -> Union[Route, Coroutine[Any, Any, tuple[io.BytesIO, str]]]:
+    ) -> Union[Route, Coroutine[Any, Any, NeitizImage]]:
 
-        json = {
+        data = {
             'image_url': image_url,
         }
 
-        route = Route('dust', headers=self.headers, json=json)
+        route = Route('dust', headers=self.headers, json=data)
         return self._make_request(route, raw)
 
     def sand(
@@ -186,13 +186,13 @@ class NeitizClient:
         image_url: str,
         *,
         raw: bool = False,
-    ) -> Union[Route, Coroutine[Any, Any, tuple[io.BytesIO, str]]]:
+    ) -> Union[Route, Coroutine[Any, Any, NeitizImage]]:
 
-        json = {
+        data = {
             'image_url': image_url,
         }
 
-        route = Route('sand', headers=self.headers, json=json)
+        route = Route('sand', headers=self.headers, json=data)
         return self._make_request(route, raw)
 
     def runescape(
@@ -200,13 +200,13 @@ class NeitizClient:
         text: str,
         *,
         raw: bool = False,
-    ) -> Union[Route, Coroutine[Any, Any, tuple[io.BytesIO, str]]]:
+    ) -> Union[Route, Coroutine[Any, Any, NeitizImage]]:
 
-        json = {
+        data = {
             'text': text,
         }
 
-        route = Route('runescape', headers=self.headers, json=json)
+        route = Route('runescape', headers=self.headers, json=data)
         return self._make_request(route, raw)
 
     def replace_colors(
@@ -221,14 +221,14 @@ class NeitizClient:
         if math.isnan(max_dist) or math.isinf(max_dist):
             raise ValueError('max_dist cannot be nan or inf')
 
-        json = {
+        data = {
             'image_url': image_url,
             'colors': colors,
             'animated': animated,
             'max_dist': max_dist,
         }
 
-        route = Route('replace_colors', headers=self.headers, json=json)
+        route = Route('replace_colors', headers=self.headers, json=data)
         return self._make_request(route, raw)
 
     def merge_colors(
@@ -244,7 +244,7 @@ class NeitizClient:
         if math.isnan(max_dist) or math.isinf(max_dist):
             raise ValueError('max_dist cannot be nan or inf')
 
-        json = {
+        data = {
             'source': source,
             'destination': destination,
             'num_colors': num_colors,
@@ -252,11 +252,11 @@ class NeitizClient:
             'max_distance': max_dist,
         }
 
-        route = Route('merge_colors', headers=self.headers, json=json)
+        route = Route('merge_colors', headers=self.headers, json=data)
         return self._make_request(route, raw)
 
-    def _make_request(self, route: Route, raw: bool) -> Union[Route, Coroutine[Any, Any, tuple[io.BytesIO, str]]]:
-        if raw or not self.session:
+    def _make_request(self, route: Route, raw: bool) -> Union[Route, Coroutine[Any, Any, NeitizImage]]:
+        if raw or self.session is None:
             return route
         else:
             return self._request(route)

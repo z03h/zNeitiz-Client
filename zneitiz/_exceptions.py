@@ -1,25 +1,41 @@
 
+from __future__ import annotations
+
+__all__ = (
+    'NeitizException',
+    'NeitizHTTPException',
+    'NeitizRatelimitException',
+    'NeitizServerException',
+)
+
 
 class NeitizException(Exception):
     def __init__(self, message: str):
         self.message: str = message
 
+    def __str__(self):
+        return self.message
+
 
 class NeitizHTTPException(NeitizException):
-    def __init__(self, status: int, message: str):
+    def __init__(self, message: str, status: int):
         self.status: int = status
         self.message: str = message
+
+    def __repr__(self) -> str:
+        return f'<{self.__class__.name} status={self.status}>'
 
 
 class NeitizRatelimitException(NeitizHTTPException):
-    def __init__(self, status: int, message: str, *, headers: dict[str, str]):
-        super().__init__(status, message)
-        self.ratelimit_reset: float = float(headers.get('x-ratelimit-resest', -1.0))
+    def __init__(self, message: str, status: int, *, headers: dict[str, str]):
+        super().__init__(message, status)
+        self.ratelimit_reset: float = float(headers.get('x-ratelimit-reset', -1.0))
         self.limit: int = int(headers.get('x-ratelimit-limit', -1))
         self.remaining: int = int(headers.get('x-ratelimit-remaining', -1))
 
+    def __repr__(self) -> str:
+        return f'<{self.__class__.name} status={self.status} ratelimit-reset={self.ratelimit_reset}>'
+
 
 class NeitizServerException(NeitizHTTPException):
-    def __init__(self, status: int, message: str):
-        self.status: int = status
-        self.message: str = message
+    pass

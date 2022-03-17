@@ -1,13 +1,13 @@
 
 from __future__ import annotations
 
-from typing import(
-    TYPE_CHECKING,
+from typing import (
     Optional,
     Any
 )
 
 __all__ = ('Route',)
+
 
 class Route:
     BASE_URL: str = 'https://zneitiz.herokuapp.com/image/'
@@ -27,4 +27,8 @@ class Route:
     def url(self) -> str:
         return self.BASE_URL + self.endpoint
 
+    def __repr__(self) -> str:
+        return f'<Route endpoint={self.endpoint}>'
 
+    def __str__(self) -> str:
+        return self.url
