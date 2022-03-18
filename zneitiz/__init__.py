@@ -1,6 +1,19 @@
+from typing import NamedTuple, Literal
+
 from .client import *
 from .image import *
 from ._enums import *
 from ._exceptions import *
 
-__version__ = '0.0.3'
+__version__: str = '0.1.0a'
+
+
+class VersionInfo(NamedTuple):
+    major: int
+    minor: int
+    micro: int
+    releaselevel: Literal["alpha", "beta", "candidate", "final"]
+    serial: int
+
+
+version_info: VersionInfo = VersionInfo(major=0, minor=1, micro=0, releaselevel='alpha', serial=0)
