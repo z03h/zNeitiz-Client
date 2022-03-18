@@ -5,7 +5,7 @@ from .image import *
 from ._enums import *
 from ._exceptions import *
 
-__version__: str = '0.1.0a'
+__version__: str = '0.1.0'
 
 
 class VersionInfo(NamedTuple):
@@ -16,4 +16,4 @@ class VersionInfo(NamedTuple):
     serial: int
 
 
-version_info: VersionInfo = VersionInfo(major=0, minor=1, micro=0, releaselevel='alpha', serial=0)
+version_info: VersionInfo = VersionInfo(major=0, minor=1, micro=0, releaselevel='final', serial=0)
