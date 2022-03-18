@@ -32,17 +32,17 @@ async def main():
     try:
         file = await znclient.sand(image_url)
     except NeitizRatelimitException as e:
-        # client will raise NeitizExcpetion to prevent 429 errors
-        print('seconds til ratelimit reset', e.ratelimit_reset)
+        # client will raise NeitizRatelimitException to prevent 429 errors
+        print('ratelimit reset', e.ratelimit_reset)
     except NeitizHTTPException as e:
-        # can get the status and message of failed requests
+        # can get the status and message of other failed requests
         print(e.status, e.message)
-
-    with open(f'{file.endpoint}.{file.extension}', 'wb') as f:
-        f.write(file.read())
+    else:
+        with open(f'{file.endpoint}.{file.extension}', 'wb') as f:
+            f.write(file.read())
     znclient.close()  # NeitizClient will not cleanup sessions you pass in yourself
 
-    # Use context manager to close any automatically created sessions if one isn't provided.
+    # Use context manager to close any automatically cleanup.
     async with NeitizClient(token) as znclient:
         ...
 
