@@ -30,12 +30,12 @@ class Route:
         endpoint: str,
         *,
         headers: dict[str, str],
-        json: Optional[dict[Any, Any]] = None,
+        json: Optional[dict[str, Any]] = None,
         session: Optional[aiohttp.ClientSession]
     ):
         self.endpoint: str = endpoint
         self.headers: dict[str, str] = headers
-        self.json: dict[str, Any] = json
+        self.json: Optional[dict[str, Any]] = json
         self.__session = session
 
     @property
@@ -80,9 +80,9 @@ class Route:
                 return file
             elif 500 <= status < 600:
                 # server error
-                raise NeitizServerException(status, r.reason)
+                raise NeitizServerException(r.reason, status)
             elif status == 429:
                 # ratelimited
-                raise NeitizRatelimitException(status, r.reason, r.headers)
+                raise NeitizRatelimitException(r.reason, status, headers=r.headers)
             else:
-                raise NeitizHTTPException(status, r.reason)
+                raise NeitizHTTPException(r.reason, status)

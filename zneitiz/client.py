@@ -2,24 +2,16 @@
 from __future__ import annotations
 
 import math
-import time
-from typing import (
-    TYPE_CHECKING,
-    Optional,
-    Union,
-    Coroutine,
-    Any
-)
-try:
-    import orjson as json
-except ModuleNotFoundError:
-    import json
+from typing import TYPE_CHECKING
 
 import aiohttp
 
 from .route import Route
-from .image import NeitizImage
 
+if TYPE_CHECKING:
+    from typing import (
+        Optional,
+    )
 
 
 if TYPE_CHECKING:
@@ -54,7 +46,7 @@ class NeitizClient:
             self._owned_session = True
 
     def __repr__(self) -> str:
-        return f'<NeitizClient closed={self.session.closed}>'
+        return f'<NeitizClient closed={self.session.closed if self.session else self.session}>'
 
     async def __aenter__(self):
         return self
@@ -70,7 +62,7 @@ class NeitizClient:
         self,
         image_url: str,
         *,
-        particle_type: ParticleType = 0,
+        particle_type: ParticleType = ParticleType.salt,
         speed: int = 2,
         amount: int = 8,
     ) -> Route:
@@ -93,7 +85,6 @@ class NeitizClient:
         image_url: str,
         *,
         percent: int = 80,
-        raw: bool = False,
     ) -> Route:
         if 0 >= percent > 100:
             raise ValueError('percentage cannot be <= 0 or > 100')
@@ -108,8 +99,6 @@ class NeitizClient:
     def dust(
         self,
         image_url: str,
-        *,
-        raw: bool = False,
     ) -> Route:
 
         data = {
@@ -121,8 +110,6 @@ class NeitizClient:
     def sand(
         self,
         image_url: str,
-        *,
-        raw: bool = False,
     ) -> Route:
 
         data = {
@@ -144,7 +131,7 @@ class NeitizClient:
     def replace_colors(
         self,
         image_url: str,
-        colors: list[list[int, int, int]],
+        colors: list[list[int]],
         *,
         animated: Optional[bool] = None,
         max_dist: float = 16.0,
@@ -169,7 +156,6 @@ class NeitizClient:
         num_colors: int = 16,
         animated: Optional[bool] = None,
         max_dist: float = 16.0,
-        raw: bool = False,
     ) -> Route:
         if math.isnan(max_dist) or math.isinf(max_dist):
             raise ValueError('max_dist cannot be nan or inf')

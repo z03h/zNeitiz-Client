@@ -17,10 +17,6 @@ readme = ''
 with open('README.md') as f:
     readme = f.read()
 
-extras_require = {
-    'json': ['orjson']
-}
-
 packages = [
     'zneitiz'
 ]
@@ -36,6 +32,5 @@ setup(name='zneitiz',
       long_description_content_type="text/markdown",
       include_package_data=True,
       install_requires=requirements,
-      extras_require=extras_require,
       python_requires='>=3.8.0',
 )

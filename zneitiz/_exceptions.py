@@ -23,7 +23,7 @@ class NeitizHTTPException(NeitizException):
         self.message: str = message
 
     def __repr__(self) -> str:
-        return f'<{self.__class__.name} status={self.status}>'
+        return f'<{self.__class__.__name__} status={self.status}>'
 
 
 class NeitizRatelimitException(NeitizHTTPException):
@@ -34,7 +34,7 @@ class NeitizRatelimitException(NeitizHTTPException):
         self.remaining: int = int(headers.get('x-ratelimit-remaining', -1))
 
     def __repr__(self) -> str:
-        return f'<{self.__class__.name} status={self.status} ratelimit-reset={self.ratelimit_reset}>'
+        return f'<{self.__class__.__name__} status={self.status} ratelimit-reset={self.ratelimit_reset}>'
 
 
 class NeitizServerException(NeitizHTTPException):
