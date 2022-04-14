@@ -1,5 +1,9 @@
 
 from __future__ import annotations
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping
 
 __all__ = (
     'NeitizException',
@@ -27,7 +31,7 @@ class NeitizHTTPException(NeitizException):
 
 
 class NeitizRatelimitException(NeitizHTTPException):
-    def __init__(self, message: str, status: int, *, headers: dict[str, str]):
+    def __init__(self, message: str, status: int, *, headers: Mapping[str, str]):
         super().__init__(message, status)
         self.ratelimit_reset: float = float(headers.get('x-ratelimit-reset', -1.0))
         self.limit: int = int(headers.get('x-ratelimit-limit', -1))

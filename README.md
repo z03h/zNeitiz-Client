@@ -5,6 +5,8 @@ Wrapper for [zNeitiz API](https://zneitiz.herokuapp.com/).
 Don't expect great things, pretty quick and dirty.
 The API is also on heroku so don't expect anything there either.
 
+Minimum python version is probaby `3.9`.
+
 Sample images [in the wiki](../../wiki).
 
 ## Examples

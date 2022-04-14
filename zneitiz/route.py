@@ -1,11 +1,7 @@
 
 from __future__ import annotations
 
-from typing import (
-    TYPE_CHECKING,
-    Optional,
-    Any
-)
+from typing import TYPE_CHECKING
 
 from .image import NeitizImage
 from ._exceptions import (
@@ -17,6 +13,10 @@ from ._exceptions import (
 
 
 if TYPE_CHECKING:
+    from typing import (
+        Optional,
+        Any
+    )
     import aiohttp
 
 __all__ = ('Route',)
