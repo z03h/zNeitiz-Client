@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 
 import aiohttp
 
+from . import __version__
 from .route import Route
 from ._enums import ParticleType
 
@@ -34,6 +35,7 @@ class NeitizClient:
         self._token: str = token
         self.headers: dict[str, str] = {
             'Authorization': f'Bearer {token}',
+            'User-Agent': f'zNeitizClient/{__version__} aiohttp/{aiohttp.__version__}',
         }
 
         self.session: Optional[aiohttp.ClientSession] = None
