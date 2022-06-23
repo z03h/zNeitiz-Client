@@ -7,7 +7,6 @@ from typing import TYPE_CHECKING
 
 import aiohttp
 
-from . import __version__
 from .route import Route
 from ._enums import ParticleType
 
