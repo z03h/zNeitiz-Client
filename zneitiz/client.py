@@ -1,6 +1,7 @@
 
 from __future__ import annotations
 
+import sys
 import math
 from typing import TYPE_CHECKING
 
@@ -35,7 +36,7 @@ class NeitizClient:
         self._token: str = token
         self.headers: dict[str, str] = {
             'Authorization': f'Bearer {token}',
-            'User-Agent': f'zNeitizClient/{__version__} aiohttp/{aiohttp.__version__}',
+            'User-Agent': f'Python/{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro} aiohttp/{aiohttp.__version__}',
         }
 
         self.session: Optional[aiohttp.ClientSession] = None
