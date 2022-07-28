@@ -66,7 +66,7 @@ async def main():
         # use an async context manager with Route to handle the request manually
         async with znclient.sand(image_url) as response:
             headers = response.headers
-            if respnose.ok:
+            if response.ok:
                 data = await response.read()
             else:
                 print(response.status, response.message)
