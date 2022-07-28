@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -21,9 +20,16 @@ if TYPE_CHECKING:
 
 __all__ = ('Route',)
 
+BASE_URL: str = 'https://zneitiz.herokuapp.com/image/'
+
 
 class Route:
-    BASE_URL: str = 'https://zneitiz.herokuapp.com/image/'
+    __slots__ = (
+        'endpoint',
+        'headers',
+        'json',
+        '_session'
+    )
 
     def __init__(
         self,
@@ -36,11 +42,11 @@ class Route:
         self.endpoint: str = endpoint
         self.headers: dict[str, str] = headers
         self.json: Optional[dict[str, Any]] = json
-        self.__session = session
+        self._session = session
 
     @property
     def url(self) -> str:
-        return self.BASE_URL + self.endpoint
+        return BASE_URL + self.endpoint
 
     def __repr__(self) -> str:
         return f'<Route endpoint={self.endpoint}>'
@@ -48,28 +54,28 @@ class Route:
     def __str__(self) -> str:
         return self.url
 
-    def __aenter__(self):
-        if not self.__session or self.__session.closed:
+    def __aenter__(self) -> aiohttp.client._RequestContextManager:
+        if not self._session or self._session.closed:
             raise NeitizException('session is not valid')
 
         url = self.url
         headers = self.headers
         body = self.json
 
-        return self.__session.get(url, headers=headers, json=body)
+        return self._session.get(url, headers=headers, json=body)
 
     def __await__(self):
         return self.__request().__await__()
 
     async def __request(self) -> NeitizImage:
-        if not self.__session or self.__session.closed:
+        if not self._session or self._session.closed:
             raise NeitizException('session is not valid')
 
         url = self.url
         headers = self.headers
         body = self.json
 
-        async with self.__session.get(url, headers=headers, json=body) as r:
+        async with self._session.get(url, headers=headers, json=body) as r:
             data: bytes = await r.read()
 
             status = int(r.status)
@@ -80,9 +86,9 @@ class Route:
                 return file
             elif 500 <= status < 600:
                 # server error
-                raise NeitizServerException(r.reason, status)
+                raise NeitizServerException(r.reason or 'Unknown', status)
             elif status == 429:
                 # ratelimited
-                raise NeitizRatelimitException(r.reason, status, headers=r.headers)
+                raise NeitizRatelimitException(r.reason or 'Unknown', status, headers=r.headers)
             else:
-                raise NeitizHTTPException(r.reason, status)
+                raise NeitizHTTPException(r.reason or 'Unknown', status)

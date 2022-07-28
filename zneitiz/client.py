@@ -1,9 +1,8 @@
-
 from __future__ import annotations
+from typing import TYPE_CHECKING
 
 import sys
 import math
-from typing import TYPE_CHECKING
 
 import aiohttp
 
@@ -54,7 +53,7 @@ class NeitizClient:
     async def __aenter__(self):
         return self
 
-    async def __aexit__(self, exc_type, exc, tb):
+    async def __aexit__(self, *args):
         await self.close()
 
     async def close(self):

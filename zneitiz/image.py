@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 
 from io import BytesIO
@@ -11,12 +10,11 @@ __all__ = (
     'NeitizImage',
 )
 
-
 class NeitizImage(BytesIO):
     __slots__ = ('content_type', 'route')
 
-    def __init__(self, *args, content_type: str, route: Route, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, initial_bytes: bytes, *, content_type: str, route: Route):
+        super().__init__(initial_bytes)
         self.content_type: str = content_type
         self.route: Route = route
 
