@@ -10,8 +10,12 @@ from .route import Route
 from ._enums import ParticleType
 
 if TYPE_CHECKING:
+    import io
+
     from typing import (
         Optional,
+        Union,
+        Any,
     )
 
 
@@ -62,7 +66,7 @@ class NeitizClient:
 
     def particles(
         self,
-        image_url: str,
+        image: Union[io.BufferedIOBase, str],
         *,
         particle_type: ParticleType = ParticleType.salt,
         speed: int = 2,
@@ -73,66 +77,63 @@ class NeitizClient:
         if amount <= 0:
             raise ValueError('amount cannot be <= 0')
 
-        data = {
-            'image_url': image_url,
+        data: dict[str, Any] = {
             'particle_type': int(particle_type),
             'speed': speed,
             'amount': amount,
         }
+        if isinstance(image, str):
+            data['image_url'] = image
+            files = None
+        else:
+            files = {'image': image}
 
-        return Route('particles', headers=self.headers, json=data, session=self.session)
+        return Route('particles', headers=self.headers, json=data, session=self.session, files=files)
 
-    def explode(
-        self,
-        image_url: str,
-        *,
-        percent: int = 80,
-    ) -> Route:
-        if 0 >= percent > 100:
-            raise ValueError('percentage cannot be <= 0 or > 100')
+    def explode(self, image: Union[io.BufferedIOBase, str], *, percent: int = 80) -> Route:
+        if percent <= 0 or percent > 100:
+            raise ValueError('percentage must be greater than 0 and less than 101')
 
-        data = {
-            'image_url': image_url,
+        data: dict[str, Any] = {
             'percent': percent,
         }
+        if isinstance(image, str):
+            data['image_url'] = image
+            files = None
+        else:
+            files = {'image': image}
 
-        return Route('explode', headers=self.headers, json=data, session=self.session)
+        return Route('explode', headers=self.headers, json=data, session=self.session, files=files)
 
-    def dust(
-        self,
-        image_url: str,
-    ) -> Route:
+    def dust(self, image: Union[io.BufferedIOBase, str]) -> Route:
 
-        data = {
-            'image_url': image_url,
-        }
+        if isinstance(image, str):
+            data = {'image_url': image}
+            files = None
+        else:
+            data = None
+            files = {'image': image}
 
-        return Route('dust', headers=self.headers, json=data, session=self.session)
+        return Route('dust', headers=self.headers, json=data, session=self.session, files=files)
 
-    def sand(
-        self,
-        image_url: str,
-    ) -> Route:
+    def sand(self, image: Union[io.BufferedIOBase, str]) -> Route:
 
-        data = {
-            'image_url': image_url,
-        }
+        if isinstance(image, str):
+            data = {'image_url': image}
+            files = None
+        else:
+            data = None
+            files = {'image': image}
 
-        return Route('sand', headers=self.headers, json=data, session=self.session)
+        return Route('sand', headers=self.headers, json=data, session=self.session, files=files)
 
-    def runescape(
-        self,
-        text: str,
-    ) -> Route:
-
-        data = {
-            'text': text,
-        }
+    def runescape(self, text: str) -> Route:
+        data = {'text': text}
         return Route('runescape', headers=self.headers, json=data, session=self.session)
 
     def replace_colors(
         self,
-        image_url: str,
+        image: Union[io.BufferedIOBase, str],
         colors: list[list[int]],
         *,
         animated: Optional[bool] = None,
@@ -142,18 +143,22 @@ class NeitizClient:
             raise ValueError('max_dist cannot be nan or inf')
 
         data = {
-            'image_url': image_url,
             'colors': colors,
             'animated': animated,
             'max_dist': max_dist,
         }
+        if isinstance(image, str):
+            data['image_url'] = image
+            files = None
+        else:
+            files = {'image': image}
 
-        return Route('replace_colors', headers=self.headers, json=data, session=self.session)
+        return Route('replace_colors', headers=self.headers, json=data, session=self.session, files=files)
 
     def merge_colors(
         self,
-        destination: str,
-        source: str,
+        destination: Union[io.BufferedIOBase, str],
+        source: Union[io.BufferedIOBase, str],
         *,
         num_colors: int = 16,
         animated: Optional[bool] = None,
@@ -163,11 +168,22 @@ class NeitizClient:
             raise ValueError('max_dist cannot be nan or inf')
 
         data = {
-            'source': source,
-            'destination': destination,
             'num_colors': num_colors,
             'animated': animated,
             'max_distance': max_dist,
         }
+        files = {}
+        if isinstance(source, str):
+            data['source_url'] = source
+        else:
+            files['source_image'] = source
 
-        return Route('merge_colors', headers=self.headers, json=data, session=self.session)
+        if isinstance(destination, str):
+            data['destination_url'] = destination
+        else:
+            files['destination_image'] = destination
+
+        if not files:
+            files = None
+
+        return Route('merge_colors', headers=self.headers, json=data, session=self.session, files=files)

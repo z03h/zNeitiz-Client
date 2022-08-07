@@ -5,7 +5,7 @@ from .image import *
 from ._enums import *
 from ._exceptions import *
 
-__version__: str = '0.1.1'
+__version__: str = '0.2.0'
 
 
 class VersionInfo(NamedTuple):
@@ -15,5 +15,6 @@ class VersionInfo(NamedTuple):
     releaselevel: Literal["alpha", "beta", "candidate", "final"]
     serial: int
 
+_major, _minor, _micro = (int(i) for i in __version__.split('.'))
 
-version_info: VersionInfo = VersionInfo(major=0, minor=1, micro=0, releaselevel='final', serial=0)
+version_info: VersionInfo = VersionInfo(major=_major, minor=_minor, micro=_micro, releaselevel='final', serial=0)

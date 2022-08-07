@@ -20,6 +20,7 @@ from zneitiz import NeitizClient, NeitizException, NeitizRatelimitException
 
 token = '...'
 image_url = '...'
+image = open('...')
 
 
 async def main():
@@ -70,6 +71,11 @@ async def main():
                 data = await response.read()
             else:
                 print(response.status, response.message)
+
+        # All image urls can be replace with file-like Object
+        # such as io.BytesIO
+        new_data = await znclient.explode(io.BytesIO(data))
+        other_data = await znclient.explode(image)
 
 
 asyncio.run(main())
