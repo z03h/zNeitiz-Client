@@ -5,7 +5,7 @@ Wrapper for [zNeitiz API](https://zneitiz.herokuapp.com/).
 Don't expect great things, pretty quick and dirty.
 The API is also on heroku so don't expect anything there either.
 
-Minimum python version is probaby `3.9`.
+Minimum python version is probaby `3.8`.
 
 Sample images [in the wiki](../../wiki).
 
@@ -61,7 +61,7 @@ async def main():
         json_body: dict[str, any] = route.json
 
         import requests
-        r = requests.get(url=url, headers=headers, json=json_body)
+        r = requests.post(url=url, headers=headers, json=json_body)
 
     async with NeitizClient(token) as znclient:
         # use an async context manager with Route to handle the request manually
