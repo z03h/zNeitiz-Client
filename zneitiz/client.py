@@ -27,7 +27,7 @@ __all__ = ('NeitizClient',)
 
 class NeitizClient:
 
-    URL = 'https://zneitiz.onrender.com/'
+    URL = 'https://zneitiz.mooo.com/'
 
     def __init__(
         self,
