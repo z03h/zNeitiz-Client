@@ -1,9 +1,9 @@
 # zNeitiz
 
-Wrapper for [zNeitiz API](https://zneitiz.herokuapp.com/).
+Wrapper for [zNeitiz API](https://zneitiz.onrender.com/).
 
 Don't expect great things, pretty quick and dirty.
-The API is also on heroku so don't expect anything there either.
+The API is also low effort so don't expect much from it.
 
 Minimum python version is probaby `3.8`.
 
