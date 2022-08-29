@@ -25,7 +25,7 @@ if TYPE_CHECKING:
 
 __all__ = ('Route',)
 
-BASE_URL: str = 'https://zneitiz.mooo.com/image/'
+BASE_URL: str = 'https://zneitiz.onrender.com/image/'
 
 
 class Route:

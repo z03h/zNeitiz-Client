@@ -1,6 +1,6 @@
 # zNeitiz
 
-Wrapper for [zNeitiz API](https://zneitiz.mooo.com/).
+Wrapper for [zNeitiz API](https://zneitiz.onrender.com/).
 
 Don't expect great things, pretty quick and dirty.
 The API is also low effort so don't expect much from it.

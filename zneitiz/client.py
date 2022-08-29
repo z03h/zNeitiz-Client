@@ -27,11 +27,11 @@ __all__ = ('NeitizClient',)
 
 class NeitizClient:
 
-    URL = 'https://zneitiz.mooo.com/'
+    URL = 'https://zneitiz.onrender.com/'
 
     def __init__(
         self,
-        token: str,
+        token: str = '',
         *,
         session: Optional[aiohttp.ClientSession] = ...,
     ):
