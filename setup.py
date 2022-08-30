@@ -7,7 +7,9 @@ with open('requirements.txt') as f:
 
 version = '0.0.0'
 with open('zneitiz/__init__.py') as f:
-    version = re.search(r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]', f.read(), re.MULTILINE).group(1)
+    version = re.search(r'^__version__.+=\s*[\'"]([^\'"]*)[\'"]', f.read(), re.MULTILINE)
+    if version:
+        version = version.group(1)
 
 if not version:
     raise RuntimeError('version is not set')
