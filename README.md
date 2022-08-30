@@ -18,7 +18,6 @@ import aiohttp
 
 from zneitiz import NeitizClient, NeitizException, NeitizRatelimitException
 
-token = '...'
 image_url = '...'
 image = open('...')
 
@@ -29,7 +28,7 @@ async def main():
 
     # Use an already existing aiohttp.ClientSession.
     cs = aiohttp.ClientSession()
-    znclient = NeitizClient(token, session=cs)
+    znclient = NeitizClient(session=cs)
     # returns an awaitable `Route` that returns a `NeitizImage`.
     # `NeitizImage`s should be treated like an `io.BytesIO`
     # has `endpoint`, `content_type` and `extension` attributes
@@ -52,7 +51,7 @@ async def main():
 
     # Use context manager to handle cleanup.
     # Can opt to pass `None` for session if you do not want to create a session
-    async with NeitizClient(token, session=None) as znclient:
+    async with NeitizClient(session=None) as znclient:
         # You can access `Route.url`, `Route.headers`, and `Route.json` for
         # manual requests or use with other libraries.
         route = znclient.sand(image_url)
@@ -63,7 +62,7 @@ async def main():
         import requests
         r = requests.post(url=url, headers=headers, json=json_body)
 
-    async with NeitizClient(token) as znclient:
+    async with NeitizClient() as znclient:
         # use an async context manager with Route to handle the request manually
         async with znclient.sand(image_url) as response:
             headers = response.headers

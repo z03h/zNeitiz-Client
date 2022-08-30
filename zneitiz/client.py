@@ -31,13 +31,12 @@ class NeitizClient:
 
     def __init__(
         self,
-        token: str = '',
         *,
         session: Optional[aiohttp.ClientSession] = ...,
     ):
-        self._token: str = token
+        #self._token: str = token
         self.headers: dict[str, str] = {
-            'Authorization': f'Bearer {token}',
+            # 'Authorization': f'Bearer {token}',
             'User-Agent': f'Python/{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro} aiohttp/{aiohttp.__version__}',
         }
 
