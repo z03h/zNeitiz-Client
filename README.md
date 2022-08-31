@@ -19,7 +19,6 @@ import aiohttp
 from zneitiz import NeitizClient, NeitizException, NeitizRatelimitException
 
 image_url = '...'
-image = open('...')
 
 
 async def main():
@@ -44,14 +43,22 @@ async def main():
         print(e.status, e.message)
     else:
         with open(f'{file.endpoint}.{file.extension}', 'wb') as f:
-            f.write(file.read())
-            
-    with open('path/to/image.png', 'rb') as f:
-        # also supports file like objects instead of image URLs
-        file = await znclient.sand(f)
+            data = file.read()
+            f.write(data)
+
+
+    # All image urls can be replace with file-like objects
+    # such as BytesIO or opened files
+    with open('path/to/image.png', 'rb') as image:
+        data = image.read()
+        new_data = await znclient.explode(io.BytesIO(data))
+
+        image.seek(0)
+        other_data = await znclient.explode(image)
 
     # NeitizClient should be closed if you do not pass in a session
     await znclient.close()
+
 
     # Use context manager to handle cleanup.
     # Can opt to pass `None` for session if you do not want to create a session
@@ -66,8 +73,9 @@ async def main():
         import requests
         r = requests.post(url=url, headers=headers, json=json_body)
 
+
+    # can use an async context manager with Route to handle the request manually
     async with NeitizClient() as znclient:
-        # use an async context manager with Route to handle the request manually
         async with znclient.sand(image_url) as response:
             headers = response.headers
             if response.ok:
@@ -75,10 +83,6 @@ async def main():
             else:
                 print(response.status, response.message)
 
-        # All image urls can be replace with file-like Object
-        # such as io.BytesIO
-        new_data = await znclient.explode(io.BytesIO(data))
-        other_data = await znclient.explode(image)
 
 
 asyncio.run(main())
