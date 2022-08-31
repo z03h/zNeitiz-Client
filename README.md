@@ -47,7 +47,7 @@ async def main():
             f.write(file.read())
 
     # NeitizClient should be closed if you do not pass in a session
-    znclient.close()
+    await znclient.close()
 
     # Use context manager to handle cleanup.
     # Can opt to pass `None` for session if you do not want to create a session
