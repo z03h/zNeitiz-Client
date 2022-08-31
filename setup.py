@@ -34,5 +34,5 @@ setup(name='zneitiz',
       long_description_content_type="text/markdown",
       include_package_data=True,
       install_requires=requirements,
-      python_requires='>=3.8.0',
+      python_requires='>=3.9.0',
 )
