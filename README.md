@@ -45,6 +45,10 @@ async def main():
     else:
         with open(f'{file.endpoint}.{file.extension}', 'wb') as f:
             f.write(file.read())
+            
+    with open('path/to/image.png', 'rb') as f:
+        # also supports file like objects instead of image URLs
+        file = await znclient.sand(f)
 
     # NeitizClient should be closed if you do not pass in a session
     await znclient.close()
