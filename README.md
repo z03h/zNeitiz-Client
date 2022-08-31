@@ -5,7 +5,7 @@ Wrapper for [zNeitiz API](https://zneitiz.onrender.com/).
 Don't expect great things, pretty quick and dirty.
 The API is also low effort so don't expect much from it.
 
-Minimum python version is probaby `3.8`.
+Minimum python version is probaby `3.9`.
 
 Sample images [in the wiki](../../wiki).
 
