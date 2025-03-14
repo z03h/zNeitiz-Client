@@ -1,8 +1,10 @@
 # zNeitiz
 
-Wrapper for [zNeitiz API](https://zneitiz.onrender.com/) \[[source](https://github.com/z03h/zNeitiz-public)\].
+Wrapper for zNeitiz API \[[source](https://github.com/z03h/zNeitiz-public)\].
 
-Install with `pip install zneitiz` or from GitHub with `pip install zneitiz@git+https://github.com/z03h/zNeitiz-Clienty@master`.
+Install with `pip install zneitiz`
+
+Or install from GitHub with `pip install zneitiz@git+https://github.com/z03h/zNeitiz-Clienty@master`.
 
 Don't expect great things, pretty quick and dirty.
 The API is also low effort so don't expect much from it.
