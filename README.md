@@ -1,6 +1,6 @@
 # zNeitiz
 
-Wrapper for [zNeitiz API](https://zneitiz.onrender.com/)[source](https://github.com/z03h/zNeitiz-public).
+Wrapper for [zNeitiz API](https://zneitiz.onrender.com/)\[[source](https://github.com/z03h/zNeitiz-public)\].
 
 Install with `pip install zneitiz` or from GitHub with `pip install zneitiz@git+https://github.com/z03h/zNeitiz-Clienty@master`.
 
