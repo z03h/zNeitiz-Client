@@ -1,9 +1,7 @@
 import re
 from setuptools import setup
 
-requirements = []
-with open('requirements.txt') as f:
-  requirements = f.read().splitlines()
+
 
 version = '0.0.0'
 with open('zneitiz/__init__.py') as f:
@@ -19,6 +17,10 @@ readme = ''
 with open('README.md') as f:
     readme = f.read()
 
+requirements = []
+with open('requirements.txt') as f:
+  requirements = f.read().splitlines()
+
 packages = [
     'zneitiz'
 ]
@@ -29,10 +31,10 @@ setup(name='zneitiz',
       version=version,
       packages=packages,
       license='MPL-2.0',
-      description='Quick fix wrapper for zNeitiz API',
+      description='Python wrapper for zNeitiz API',
       long_description=readme,
       long_description_content_type="text/markdown",
       include_package_data=True,
-      install_requires=requirements,
+      #install_requires=requirements,
       python_requires='>=3.9.0',
 )

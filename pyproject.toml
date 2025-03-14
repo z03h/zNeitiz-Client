@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "zneitiz"
+description = "A Python wrapper for the zNeitiz API"
+readme = { file = "README.md", content-type = "text/markdown" }
+license = { file = "LICENSE" }
+requires-python = ">=3.9"
+authors = [{ name = "z03h" }]
+dynamic = ["version", "dependencies"]
+
+[tool.setuptools.dynamic]
+dependencies = { file = "requirements.txt" }

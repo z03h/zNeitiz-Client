@@ -32,7 +32,7 @@ class NeitizClient:
     def __init__(
         self,
         *,
-        session: Optional[aiohttp.ClientSession] = ...,
+        session: Optional[aiohttp.ClientSession] = ...,  # type: ignore  # cheating but I can't use None for no session
     ):
         #self._token: str = token
         self.headers: dict[str, str] = {
